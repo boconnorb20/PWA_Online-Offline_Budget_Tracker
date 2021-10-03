@@ -1,11 +1,9 @@
 let db;
-let budgetVersion;
-
 // Create a new db request for a "budget" database.
-const request = indexedDB.open('BudgetDB', budgetVersion || 21);
+const request = window.indexedDB.open("Budget", 1);
 
 request.onupgradeneeded = function (e) {
-  console.log('Upgrade needed in IndexDB');
+  console.log('Upgrade needed in index_db');
 
   const { oldVersion } = e;
   const newVersion = e.newVersion || db.version;
@@ -22,6 +20,15 @@ request.onupgradeneeded = function (e) {
 request.onerror = function (e) {
   console.log(`Woops! ${e.target.errorCode}`);
 };
+
+function saveRecord(data) {
+  const transaction = db.transaction(["Budget"], "readwrite");
+  const budgetStore = transaction.objectStore("Budget");
+
+    // Adds data to our BudgetStore
+    budgetStore.add(data);
+    console.log(data);
+};  
 
 function checkDatabase() {
   console.log('check db invoked');
@@ -77,17 +84,17 @@ request.onsuccess = function (e) {
   }
 };
 
-const saveRecord = (record) => {
-  console.log('Save record invoked');
-  // Create a transaction on the BudgetStore db with readwrite access
-  const transaction = db.transaction(['BudgetStore'], 'readwrite');
+// const saveRecord = (record) => {
+//   console.log('Save record invoked');
+//   // Create a transaction on the BudgetStore db with readwrite access
+//   const transaction = db.transaction(['BudgetStore'], 'readwrite');
 
-  // Access your BudgetStore object store
-  const store = transaction.objectStore('BudgetStore');
+//   // Access your BudgetStore object store
+//   const store = transaction.objectStore('BudgetStore');
 
-  // Add record to your store with add method.
-  store.add(record);
-};
+//   // Add record to your store with add method.
+//   store.add(record);
+// };
 
 // Listen for app coming back online
 window.addEventListener('online', checkDatabase);
